@@ -22,7 +22,7 @@ See [data/README.md](data/README.md) for download instructions, field definition
 ## Planned deliverables
 
 1. **Data ingestion and data quality** — reproducible download, schema inspection, missingness, duplicates, cancellations, returns, and validation checks.
-2. **SQL analytics** — revenue trends, order patterns, repeat purchase behaviour, cohort retention, and customer-level metrics.
+2. **SQL analytics** — revenue trends, product performance, repeat purchase behaviour, cohort retention, country contribution, and cancellation monitoring. See `sql/business_analysis.sql`.
 3. **Exploratory analysis** — customer, product, geography, and time-based analysis with clear visualizations.
 4. **Customer segmentation** — RFM features (recency, frequency, monetary value), baseline segments, and interpretation.
 5. **Churn / inactivity modelling** — define a leakage-safe target, build a baseline model, compare suitable models, and evaluate with precision, recall, F1, ROC-AUC and PR-AUC as appropriate.
@@ -83,10 +83,13 @@ See [data/README.md](data/README.md) for download instructions, field definition
 - [x] Repository foundation and project scope
 - [x] Select and document a public dataset
 - [x] Initial ingestion, cleaning, analytics, and RFM segmentation modules
+- [x] Advanced SQL business-analysis query pack
+- [x] Monthly customer cohort-retention analysis with automated tests
 - [x] Unit tests and GitHub Actions CI workflow added
 - [ ] Execute CI and resolve any failures
 - [ ] Download and validate the full raw workbook
-- [ ] Full dataset SQL analysis and EDA
+- [ ] Execute SQL pack against PostgreSQL and interpret business findings
+- [ ] Full exploratory analysis and business recommendations
 - [ ] Time-based inactivity target and validated churn model
 - [ ] Dashboard, business recommendations, and deployment
 
