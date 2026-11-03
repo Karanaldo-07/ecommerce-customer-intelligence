@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   analytics:
@@ -25,6 +25,17 @@ jobs:
         run: python scripts/download_data.py
       - name: Run data quality and customer analytics
         run: python scripts/run_analysis.py
+      - name: Build privacy-conscious dashboard aggregates
+        run: python scripts/build_public_dashboard_data.py
+      - name: Commit aggregate dashboard data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dashboard_data/
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish refreshed aggregate dashboard data"
+            git push
+          fi
       - name: Upload generated reports and processed data
         uses: actions/upload-artifact@v4
         with:
