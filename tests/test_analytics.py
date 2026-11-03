@@ -1,6 +1,7 @@
 import pandas as pd
 from ecommerce_intel.analytics import monthly_revenue, build_rfm, cohort_retention
 from ecommerce_intel.segmentation import segment_customers
+from ecommerce_intel.eda import run_eda
 
 def transactions():
     return pd.DataFrame({
@@ -49,3 +50,14 @@ def test_cohort_retention_tracks_repeat_customers():
     assert jan.loc[jan["cohort_index"] == 1, "retention_rate"].iloc[0] == 1.0
     assert jan.loc[jan["cohort_index"] == 2, "customers"].iloc[0] == 1
     assert jan.loc[jan["cohort_index"] == 2, "retention_rate"].iloc[0] == 0.5
+
+def test_eda_creates_summary_tables_and_figures(tmp_path):
+    df = transactions()
+    df["is_valid_sale"] = True
+    df["line_revenue"] = df.quantity * df.unit_price
+    summary = run_eda(df, tmp_path / "processed", tmp_path / "reports")
+    assert summary["valid_sale_lines"] == 4
+    assert summary["identified_customers"] == 2
+    assert summary["repeat_customers"] == 1
+    assert (tmp_path / "processed" / "eda_product_performance.csv").exists()
+    assert (tmp_path / "reports" / "figures" / "monthly_revenue_trend.png").exists()
