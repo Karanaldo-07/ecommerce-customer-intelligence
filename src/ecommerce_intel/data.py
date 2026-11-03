@@ -5,12 +5,20 @@ import pandas as pd
 REQUIRED_COLUMNS = ["Invoice", "StockCode", "Description", "Quantity", "InvoiceDate", "Price", "Customer ID", "Country"]
 COLUMN_MAP = {"Invoice":"invoice_no","StockCode":"stock_code","Description":"description","Quantity":"quantity","InvoiceDate":"invoice_date","Price":"unit_price","Customer ID":"customer_id","Country":"country"}
 
-def load_retail_workbook(path: str | Path, sheet_name: int | str = 0) -> pd.DataFrame:
-    """Load one sheet from the official Excel workbook."""
-    frame = pd.read_excel(path, sheet_name=sheet_name)
-    missing = sorted(set(REQUIRED_COLUMNS) - set(frame.columns))
-    if missing:
-        raise ValueError(f"Dataset is missing required columns: {missing}")
+def load_retail_workbook(path: str | Path, sheet_name: int | str | None = None) -> pd.DataFrame:
+    """Load both yearly sheets by default, or one explicitly requested sheet."""
+    frames = pd.read_excel(path, sheet_name=sheet_name)
+    if isinstance(frames, dict):
+        for name, frame in frames.items():
+            missing = sorted(set(REQUIRED_COLUMNS) - set(frame.columns))
+            if missing:
+                raise ValueError(f"Sheet {name!r} is missing required columns: {missing}")
+        frame = pd.concat(frames.values(), ignore_index=True)
+    else:
+        frame = frames
+        missing = sorted(set(REQUIRED_COLUMNS) - set(frame.columns))
+        if missing:
+            raise ValueError(f"Dataset is missing required columns: {missing}")
     return frame.rename(columns=COLUMN_MAP)
 
 def clean_transactions(frame: pd.DataFrame) -> pd.DataFrame:
