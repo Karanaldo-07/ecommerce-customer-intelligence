@@ -2,7 +2,7 @@
 
 An end-to-end, portfolio-grade data science project exploring e-commerce transactions, customer behaviour, revenue performance, segmentation, and churn risk.
 
-> **Project status:** Dataset selected and project foundation created. Analysis, models, metrics, and dashboard results will be added only after they have been implemented and validated. No performance claims are made at this stage.
+> **Project status:** Full-dataset EDA and baseline inactivity modelling have been executed successfully. Power BI dashboard specifications and DAX measures are available under `powerbi/`. The model is a research baseline, not a production churn system.
 
 ## Business problem
 
@@ -26,8 +26,8 @@ See [data/README.md](data/README.md) for download instructions, field definition
 3. **Exploratory analysis** — automated monthly revenue, country and product performance, order-value distribution, customer repeat-purchase summary, and cohort-retention visualizations. EDA tables are written to `data/processed/eda_*.csv`; charts and `reports/eda_summary.json` are written under `reports/`.
 4. **Customer segmentation** — RFM features (recency, frequency, monetary value), baseline segments, and interpretation.
 5. **Churn / inactivity modelling** — create monthly customer snapshots from a 180-day lookback, label inactivity in the following 90 days, and compare Logistic Regression with Random Forest using a chronological holdout and precision, recall, F1, ROC-AUC and PR-AUC.
-6. **Business recommendations** — translate findings into testable retention and merchandising actions.
-7. **Dashboard and API** — publish an interactive analytics dashboard and, if useful, a small prediction API.
+6. **Business recommendations** — validated findings and testable retention/merchandising actions are documented in `reports/business_findings.md`.
+7. **Dashboard** — Power BI import guide and DAX measures are available in `powerbi/`.
 
 ## Initial technology stack
 
@@ -92,9 +92,10 @@ See [data/README.md](data/README.md) for download instructions, field definition
 - [x] Download and validate the full raw workbook
 - [ ] Execute SQL pack against PostgreSQL and interpret business findings
 - [x] Generate full-dataset exploratory analysis tables and charts
-- [ ] Interpret EDA findings and write business recommendations
-- [ ] Validate inactivity model training and metrics on the complete dataset
-- [ ] Dashboard, business recommendations, and deployment
+- [x] Interpret full-dataset EDA findings and document business recommendations
+- [x] Validate inactivity model training and metrics on the complete dataset
+- [x] Prepare Power BI data model guide and DAX measures
+- [ ] Build and publish the interactive dashboard
 
 ## Run the project
 
@@ -107,3 +108,14 @@ The current model module deliberately refuses to train unless a chronological ob
 Karan Bhise — B.E. Artificial Intelligence & Data Science.
 
 This is an independent portfolio project, not professional client work.
+
+
+## Validated full-dataset snapshot (3 November 2026)
+
+- 1,067,371 raw transaction rows; 1,041,670 valid sale lines.
+- £20.97M valid-sale revenue across 40,077 invoices; average invoice value £523.31.
+- 5,878 identified customers; 72.39% are repeat customers among identified customers.
+- Logistic Regression baseline: inactive-class precision 58.6%, recall 79.5%, F1 0.675, ROC-AUC 0.728, PR-AUC 0.640 on a chronological holdout.
+- Random Forest baseline: inactive-class precision 59.1%, recall 74.8%, F1 0.661, ROC-AUC 0.715, PR-AUC 0.624 on the same holdout.
+
+See [reports/business_findings.md](reports/business_findings.md) for definitions, caveats, and recommendations. The inactivity label means no purchase in the next 90 days; it is not a definitive prediction of permanent churn. See [powerbi/README.md](powerbi/README.md) and [powerbi/measures.dax](powerbi/measures.dax) for the dashboard build guide.
