@@ -64,7 +64,7 @@ See [data/README.md](data/README.md) for download instructions, field definition
 
 1. Use Python 3.11 or newer.
 2. Create and activate a virtual environment.
-3. Install dependencies: `pip install -r requirements.txt`.
+3. Install full project dependencies: `pip install -r requirements-dev.txt`.
 4. Download the dataset: `python scripts/download_data.py`.
 5. Read [data/README.md](data/README.md) before analysis.
 6. Configure local database credentials using `.env.example`. Never commit real credentials.
@@ -96,11 +96,11 @@ See [data/README.md](data/README.md) for download instructions, field definition
 - [x] Validate inactivity model training and metrics on the complete dataset
 - [x] Prepare Power BI data model guide and DAX measures
 - [x] Build interactive Streamlit dashboard with revenue, country, product, customer, cohort, model, and data-quality views
-- [ ] Publish dashboard with generated aggregate datasets
+- [x] Publish privacy-safe aggregate dashboard datasets
 
 ## Run the project
 
-Install dependencies with `pip install -r requirements.txt`, download the source workbook using `python scripts/download_data.py`, then run `python scripts/run_analysis.py`. The pipeline writes processed tables under `data/processed/`, quality and EDA summaries under `reports/`, and charts under `reports/figures/`. Run tests with `pytest -q`.
+Install full project dependencies with `pip install -r requirements-dev.txt`, download the source workbook using `python scripts/download_data.py`, then run `python scripts/run_analysis.py`. The pipeline writes processed tables under `data/processed/`, quality and EDA summaries under `reports/`, and charts under `reports/figures/`. Run tests with `pytest -q`.
 
 The current model module deliberately refuses to train unless a chronological observation window and future inactivity label are supplied. This prevents a misleading churn result from being manufactured from a single undivided transaction history.
 
