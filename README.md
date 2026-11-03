@@ -27,7 +27,7 @@ See [data/README.md](data/README.md) for download instructions, field definition
 4. **Customer segmentation** — RFM features (recency, frequency, monetary value), baseline segments, and interpretation.
 5. **Churn / inactivity modelling** — create monthly customer snapshots from a 180-day lookback, label inactivity in the following 90 days, and compare Logistic Regression with Random Forest using a chronological holdout and precision, recall, F1, ROC-AUC and PR-AUC.
 6. **Business recommendations** — validated findings and testable retention/merchandising actions are documented in `reports/business_findings.md`.
-7. **Dashboard** — Power BI import guide and DAX measures are available in `powerbi/`.
+7. **Dashboard** — interactive Streamlit dashboard in `app.py`; Power BI import guide and DAX measures are available in `powerbi/`.
 
 ## Initial technology stack
 
@@ -95,7 +95,8 @@ See [data/README.md](data/README.md) for download instructions, field definition
 - [x] Interpret full-dataset EDA findings and document business recommendations
 - [x] Validate inactivity model training and metrics on the complete dataset
 - [x] Prepare Power BI data model guide and DAX measures
-- [ ] Build and publish the interactive dashboard
+- [x] Build interactive Streamlit dashboard with revenue, country, product, customer, cohort, model, and data-quality views
+- [ ] Publish dashboard with generated aggregate datasets
 
 ## Run the project
 
@@ -119,3 +120,8 @@ This is an independent portfolio project, not professional client work.
 - Random Forest baseline: inactive-class precision 59.1%, recall 74.8%, F1 0.661, ROC-AUC 0.715, PR-AUC 0.624 on the same holdout.
 
 See [reports/business_findings.md](reports/business_findings.md) for definitions, caveats, and recommendations. The inactivity label means no purchase in the next 90 days; it is not a definitive prediction of permanent churn. See [powerbi/README.md](powerbi/README.md) and [powerbi/measures.dax](powerbi/measures.dax) for the dashboard build guide.
+
+
+## Interactive dashboard
+
+Run `streamlit run app.py` after downloading and extracting the latest analytics artifact into the repository root. Setup instructions are in [dashboard/README.md](dashboard/README.md). The app uses the generated aggregate CSV/JSON outputs and does not retrain the models when it starts.
