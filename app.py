@@ -6,7 +6,7 @@ import plotly.express as px
 import streamlit as st
 
 ROOT = Path(__file__).resolve().parent
-DATA, REPORTS = ROOT / "data" / "processed", ROOT / "reports"
+DATA, REPORTS = ROOT / "dashboard_data", ROOT / "dashboard_data"
 st.set_page_config(page_title="E-Commerce Customer Intelligence", page_icon="📊", layout="wide")
 
 @st.cache_data
@@ -25,13 +25,13 @@ def report(name):
     path = REPORTS / name
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
 
-monthly = csv("eda_monthly_revenue.csv", ("month",))
-countries = csv("eda_country_performance.csv")
-products = csv("eda_product_performance.csv")
-customers = csv("eda_customer_summary.csv", ("last_purchase",))
-cohorts = csv("eda_cohort_retention.csv", ("cohort_month", "activity_month"))
-segments = csv("customer_segments.csv")
-snapshots = csv("inactivity_training_data.csv", ("observation_end",))
+monthly = csv("monthly_revenue.csv", ("month",))
+countries = csv("country_performance.csv")
+products = csv("product_performance.csv")
+customers = csv("customer_type_summary.csv")
+cohorts = csv("cohort_retention.csv", ("cohort_month", "activity_month"))
+segments = csv("segment_counts.csv")
+snapshots = csv("inactivity_monthly_summary.csv", ("observation_end",))
 quality, summary, model = report("data_quality.json"), report("eda_summary.json"), report("model_evaluation.json")
 
 st.title("E-Commerce Customer Intelligence")
@@ -41,7 +41,7 @@ required = {"monthly revenue": monthly, "country performance": countries, "produ
 missing = [name for name, frame in required.items() if frame.empty]
 if missing:
     st.error("Missing dashboard datasets: " + ", ".join(missing))
-    st.markdown("Download the latest output bundle from the [GitHub Actions analytics workflow](https://github.com/Karanaldo-07/ecommerce-customer-intelligence/actions/workflows/analytics.yml), extract data/processed and reports into the repository root, then restart.")
+    st.markdown("Run the Build analytics outputs workflow; its final step publishes aggregate-only dashboard_data files to the repository. Restart the app after the workflow completes.")
     st.stop()
 
 with st.sidebar:
