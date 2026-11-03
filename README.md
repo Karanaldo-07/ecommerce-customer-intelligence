@@ -96,7 +96,7 @@ See [data/README.md](data/README.md) for download instructions, field definition
 - [x] Validate inactivity model training and metrics on the complete dataset
 - [x] Prepare Power BI data model guide and DAX measures
 - [x] Build interactive Streamlit dashboard with revenue, country, product, customer, cohort, model, and data-quality views
-- [x] Publish privacy-safe aggregate dashboard datasets
+- [x] Publish privacy-safe aggregate dashboard datasets\n- [x] Add automated dashboard data-contract and privacy validation\n- [x] Add interactive business recommendations and scenario planning
 
 ## Run the project
 
