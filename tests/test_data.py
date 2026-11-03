@@ -31,7 +31,7 @@ def test_quality_counts(sample):
 def test_customer_orders_excludes_unidentified_and_invalid(sample):
     orders = customer_orders(clean_transactions(sample))
     assert len(orders) == 2
-    assert orders["order_revenue"].sum() == 25
+    assert orders["order_revenue"].sum() == 45
 
 def test_missing_columns_raise():
     with pytest.raises(ValueError):
