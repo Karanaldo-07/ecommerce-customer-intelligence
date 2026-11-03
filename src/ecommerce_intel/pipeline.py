@@ -15,7 +15,7 @@ def run_pipeline(workbook: str | Path | None = None) -> dict:
     figures = reports / "figures"
     output.mkdir(parents=True, exist_ok=True)
     figures.mkdir(parents=True, exist_ok=True)
-    raw = load_retail_workbook(workbook, sheet_name=0)
+    raw = load_retail_workbook(workbook)
     clean = clean_transactions(raw)
     quality = validate_transactions(clean)
     clean.to_parquet(output / "transactions.parquet", index=False)
