@@ -6,6 +6,7 @@ from .data import load_retail_workbook, clean_transactions, validate_transaction
 from .analytics import monthly_revenue, country_performance, build_rfm, cohort_retention
 from .segmentation import segment_customers
 from .eda import run_eda
+from .modeling import build_inactivity_dataset, train_inactivity_baseline
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -28,8 +29,18 @@ def run_pipeline(workbook: str | Path | None = None) -> dict:
     segmented = segment_customers(rfm)
     rfm.to_csv(output / "customer_rfm.csv", index=False)
     segmented.to_csv(output / "customer_segments.csv", index=False)
+    inactivity_data = build_inactivity_dataset(clean)
+    inactivity_data.to_csv(output / "inactivity_training_data.csv", index=False)
+    model_summary = {"status": "not_trained", "reason": "Insufficient time snapshots or class diversity"}
+    if not inactivity_data.empty and inactivity_data["is_inactive"].nunique() == 2:
+        fitted_models, model_summary, test_index = train_inactivity_baseline(inactivity_data)
+        for model_name, fitted_model in fitted_models.items():
+            import joblib
+            joblib.dump(fitted_model, output / f"{model_name}.joblib")
+        model_summary["status"] = "trained"
+    (reports / "model_evaluation.json").write_text(json.dumps(model_summary, indent=2), encoding="utf-8")
     (reports / "data_quality.json").write_text(json.dumps(quality, indent=2), encoding="utf-8")
-    return {"data_quality": quality, "eda_summary": eda_summary}
+    return {"data_quality": quality, "eda_summary": eda_summary, "model_summary": model_summary}
 
 if __name__ == "__main__":
     print(json.dumps(run_pipeline(), indent=2))
