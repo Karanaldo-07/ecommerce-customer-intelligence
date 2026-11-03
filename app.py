@@ -95,18 +95,18 @@ with drivers:
 
 with customer:
     a, b = st.columns(2)
-    types = customers["customer_type"].value_counts().rename_axis("customer_type").reset_index(name="customers")
+    types = customers[["customer_type", "customers"]]
     a.plotly_chart(px.pie(types, names="customer_type", values="customers", hole=.45,
                           title="One-time vs repeat customers"), use_container_width=True)
-    b.plotly_chart(px.histogram(customers, x="lifetime_revenue", nbins=50,
-                                title="Lifetime revenue distribution",
-                                labels={"lifetime_revenue":"Revenue (GBP)"}), use_container_width=True)
+    bands = csv("customer_revenue_bands.csv")
+    b.plotly_chart(px.bar(bands, x="revenue_band", y="customers",
+                          title="Customer lifetime revenue bands"), use_container_width=True)
     matrix = cohorts.pivot(index="cohort_month", columns="cohort_index", values="retention_rate")
     st.plotly_chart(px.imshow(matrix, aspect="auto", zmin=0, zmax=1, color_continuous_scale="Blues",
         labels={"x":"Months since first purchase","y":"Cohort month","color":"Retention"},
         title="Cohort retention heatmap"), use_container_width=True)
     if not segments.empty:
-        counts = segments["segment"].value_counts().rename_axis("segment").reset_index(name="customers")
+        counts = segments[["segment", "customers"]]
         st.plotly_chart(px.bar(counts, x="segment", y="customers", title="RFM customer segments"),
                         use_container_width=True)
 
@@ -127,9 +127,9 @@ with model_tab:
             x="Metric",y="Score",color="Model",barmode="group",range_y=[0,1],
             title="Chronological holdout model comparison"), use_container_width=True)
         if not snapshots.empty:
-            by_month = snapshots.groupby("observation_end",as_index=False)["is_inactive"].mean()
-            st.plotly_chart(px.line(by_month,x="observation_end",y="is_inactive",markers=True,
-                labels={"observation_end":"Observation month","is_inactive":"Inactive share"},
+            by_month = snapshots
+            st.plotly_chart(px.line(by_month,x="observation_end",y="inactive_share",markers=True,
+                labels={"observation_end":"Observation month","inactive_share":"Inactive share"},
                 title="Inactivity rate by snapshot month"), use_container_width=True)
 
 with quality_tab:
