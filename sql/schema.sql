@@ -1,52 +1,38 @@
--- Initial normalized schema for an order-level e-commerce dataset.
--- Adapt column types and constraints after the selected dataset is inspected.
-
-CREATE TABLE IF NOT EXISTS customers (
-    customer_id       VARCHAR(64) PRIMARY KEY,
-    first_seen_at     TIMESTAMP,
-    country           VARCHAR(100)
+-- UCI Online Retail II line-item staging schema.
+-- Preserve raw transaction signs and cancellation invoices; filter only in analysis views.
+CREATE TABLE IF NOT EXISTS retail_transactions (
+    transaction_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    invoice_no VARCHAR(20) NOT NULL,
+    stock_code VARCHAR(40),
+    description TEXT,
+    quantity INTEGER,
+    invoice_date TIMESTAMP,
+    unit_price NUMERIC(12, 4),
+    customer_id VARCHAR(20),
+    country VARCHAR(100),
+    is_cancellation BOOLEAN NOT NULL DEFAULT FALSE,
+    is_valid_sale BOOLEAN NOT NULL DEFAULT FALSE,
+    line_revenue NUMERIC(14, 4)
 );
+CREATE INDEX IF NOT EXISTS idx_retail_invoice_date ON retail_transactions(invoice_date);
+CREATE INDEX IF NOT EXISTS idx_retail_customer_date ON retail_transactions(customer_id, invoice_date);
+CREATE INDEX IF NOT EXISTS idx_retail_country ON retail_transactions(country);
 
-CREATE TABLE IF NOT EXISTS products (
-    product_id        VARCHAR(64) PRIMARY KEY,
-    product_name      TEXT,
-    category          VARCHAR(150)
-);
+-- Monthly revenue: valid positive sale lines only; dataset prices are treated as GBP.
+SELECT date_trunc('month', invoice_date) AS revenue_month,
+       SUM(quantity * unit_price) AS gross_line_revenue,
+       COUNT(DISTINCT invoice_no) AS invoice_count
+FROM retail_transactions
+WHERE is_valid_sale
+GROUP BY 1
+ORDER BY 1;
 
-CREATE TABLE IF NOT EXISTS orders (
-    order_id          VARCHAR(64) PRIMARY KEY,
-    customer_id       VARCHAR(64) NOT NULL REFERENCES customers(customer_id),
-    order_timestamp   TIMESTAMP NOT NULL,
-    order_status      VARCHAR(40),
-    currency          CHAR(3)
-);
-
-CREATE TABLE IF NOT EXISTS order_items (
-    order_item_id     BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    order_id          VARCHAR(64) NOT NULL REFERENCES orders(order_id),
-    product_id        VARCHAR(64) REFERENCES products(product_id),
-    quantity          INTEGER NOT NULL CHECK (quantity > 0),
-    unit_price        NUMERIC(12, 2) NOT NULL CHECK (unit_price >= 0),
-    discount_amount   NUMERIC(12, 2) NOT NULL DEFAULT 0 CHECK (discount_amount >= 0)
-);
-
-CREATE INDEX IF NOT EXISTS idx_orders_customer_timestamp
-    ON orders(customer_id, order_timestamp);
-
-CREATE INDEX IF NOT EXISTS idx_orders_timestamp
-    ON orders(order_timestamp);
-
-CREATE INDEX IF NOT EXISTS idx_order_items_order
-    ON order_items(order_id);
-
--- Example query: revenue by calendar month.
--- Assumes order status has already been filtered to the business definition
--- of completed/valid orders and currency has been normalized.
---
--- SELECT date_trunc('month', o.order_timestamp) AS order_month,
---        SUM(oi.quantity * oi.unit_price - oi.discount_amount) AS net_revenue
--- FROM orders AS o
--- JOIN order_items AS oi ON oi.order_id = o.order_id
--- WHERE o.order_status = 'completed'
--- GROUP BY 1
--- ORDER BY 1;
+-- Customer-level RFM base. Recency reference date should be explicitly documented.
+SELECT customer_id,
+       MAX(invoice_date) AS last_purchase,
+       COUNT(DISTINCT invoice_no) AS frequency,
+       SUM(quantity * unit_price) AS monetary
+FROM retail_transactions
+WHERE is_valid_sale AND customer_id IS NOT NULL
+GROUP BY customer_id
+ORDER BY monetary DESC;
