@@ -23,7 +23,7 @@ See [data/README.md](data/README.md) for download instructions, field definition
 
 1. **Data ingestion and data quality** — reproducible download, schema inspection, missingness, duplicates, cancellations, returns, and validation checks.
 2. **SQL analytics** — revenue trends, product performance, repeat purchase behaviour, cohort retention, country contribution, and cancellation monitoring. See `sql/business_analysis.sql`.
-3. **Exploratory analysis** — customer, product, geography, and time-based analysis with clear visualizations.
+3. **Exploratory analysis** — automated monthly revenue, country and product performance, order-value distribution, customer repeat-purchase summary, and cohort-retention visualizations. EDA tables are written to `data/processed/eda_*.csv`; charts and `reports/eda_summary.json` are written under `reports/`.
 4. **Customer segmentation** — RFM features (recency, frequency, monetary value), baseline segments, and interpretation.
 5. **Churn / inactivity modelling** — define a leakage-safe target, build a baseline model, compare suitable models, and evaluate with precision, recall, F1, ROC-AUC and PR-AUC as appropriate.
 6. **Business recommendations** — translate findings into testable retention and merchandising actions.
@@ -85,17 +85,19 @@ See [data/README.md](data/README.md) for download instructions, field definition
 - [x] Initial ingestion, cleaning, analytics, and RFM segmentation modules
 - [x] Advanced SQL business-analysis query pack
 - [x] Monthly customer cohort-retention analysis with automated tests
+- [x] Reproducible EDA tables, summary metrics, and charts integrated into the pipeline
 - [x] Unit tests and GitHub Actions CI workflow added
-- [ ] Execute CI and resolve any failures
-- [ ] Download and validate the full raw workbook
+- [x] Execute CI and resolve initial failures
+- [x] Download and validate the full raw workbook
 - [ ] Execute SQL pack against PostgreSQL and interpret business findings
-- [ ] Full exploratory analysis and business recommendations
+- [x] Generate full-dataset exploratory analysis tables and charts
+- [ ] Interpret EDA findings and write business recommendations
 - [ ] Time-based inactivity target and validated churn model
 - [ ] Dashboard, business recommendations, and deployment
 
 ## Run the project
 
-Install dependencies with `pip install -r requirements.txt`, download the source workbook using `python scripts/download_data.py`, then run `python scripts/run_analysis.py`. The pipeline writes generated files under `data/processed/` and a quality report under `reports/`. Run tests with `pytest -q`.
+Install dependencies with `pip install -r requirements.txt`, download the source workbook using `python scripts/download_data.py`, then run `python scripts/run_analysis.py`. The pipeline writes processed tables under `data/processed/`, quality and EDA summaries under `reports/`, and charts under `reports/figures/`. Run tests with `pytest -q`.
 
 The current model module deliberately refuses to train unless a chronological observation window and future inactivity label are supplied. This prevents a misleading churn result from being manufactured from a single undivided transaction history.
 
