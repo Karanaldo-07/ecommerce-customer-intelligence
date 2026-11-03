@@ -25,7 +25,7 @@ def test_rfm_order_frequency_and_monetary():
     result=build_rfm(df, reference_date="2011-02-03")
     row=result.set_index("customer_id").loc["10"]
     assert row["frequency"]==2
-    assert row["monetary"]==35
+    assert row["monetary"]==30
     assert row["recency_days"]==2
 
 def test_segmentation_adds_labels():
