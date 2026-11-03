@@ -3,7 +3,7 @@ from pathlib import Path
 import json
 import pandas as pd
 from .data import load_retail_workbook, clean_transactions, validate_transactions
-from .analytics import monthly_revenue, country_performance, build_rfm
+from .analytics import monthly_revenue, country_performance, build_rfm, cohort_retention
 from .segmentation import segment_customers
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -21,6 +21,7 @@ def run_pipeline(workbook: str | Path | None = None) -> dict:
     clean.to_parquet(output / "transactions.parquet", index=False)
     monthly_revenue(clean).to_csv(output / "monthly_revenue.csv", index=False)
     country_performance(clean).to_csv(output / "country_performance.csv", index=False)
+    cohort_retention(clean).to_csv(output / "cohort_retention.csv", index=False)
     rfm = build_rfm(clean)
     segmented = segment_customers(rfm)
     rfm.to_csv(output / "customer_rfm.csv", index=False)
