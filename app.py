@@ -172,9 +172,9 @@ with cols[1]: kpi("INVOICES", f"{invoice_count:,}", "Distinct valid-sale invoice
 with cols[2]: kpi("AVERAGE ORDER VALUE", money(aov, 2), "Revenue ÷ invoices")
 with cols[3]: kpi("REPEAT CUSTOMER RATE", f"{repeat_rate:.1%}", f"{repeat_customers:,} of {identified:,} identified customers")
 
-tab_overview, tab_revenue, tab_customer, tab_model, tab_quality = st.tabs([
+tab_overview, tab_revenue, tab_customer, tab_model, tab_recommend, tab_quality = st.tabs([
     "  Overview  ", "  Revenue drivers  ", "  Customer intelligence  ",
-    "  Inactivity model  ", "  Data quality  ",
+    "  Inactivity model  ", "  Business actions  ", "  Data quality  ",
 ])
 
 # ---------- Overview ----------
@@ -329,6 +329,58 @@ with tab_model:
             fig.update_yaxes(tickformat=".0%")
             st.plotly_chart(chart_style(fig, 370), use_container_width=True)
         st.caption("Models compared: Logistic Regression and Random Forest. Features use a 180-day lookback; the target looks 90 days ahead. Results are historical and may not generalise to current customers.")
+
+
+# ---------- Business recommendations ----------
+with tab_recommend:
+    st.markdown("### Turn analysis into action")
+    st.markdown('<div class="section-note">These recommendations are evidence-led hypotheses based on this historical dataset. Validate them with controlled experiments before treating them as proven drivers of growth.</div>', unsafe_allow_html=True)
+
+    one_time = int(customers.loc[customers["customer_type"] == "One-time", "customers"].sum())
+    repeat = int(customers.loc[customers["customer_type"] == "Repeat", "customers"].sum())
+    at_risk = int(segments.loc[segments["segment"].str.lower() == "at risk", "customers"].sum()) if not segments.empty else 0
+    needs_attention = int(segments.loc[segments["segment"].str.lower() == "needs attention", "customers"].sum()) if not segments.empty else 0
+    uk_share = top_country_revenue / total_revenue if total_revenue else 0
+    logit = model.get("models", {}).get("logistic_regression", {})
+    precision = float(logit.get("precision", 0))
+    recall = float(logit.get("recall", 0))
+
+    a, b, c = st.columns(3)
+    with a: kpi("ONE-TIME CUSTOMERS", f"{one_time:,}", "Potential second-purchase audience")
+    with b: kpi("NEEDS ATTENTION SEGMENT", f"{needs_attention:,}", "Largest RFM group in this analysis")
+    with c: kpi("UK REVENUE SHARE", f"{uk_share:.1%}", "High geographic concentration")
+
+    st.markdown("#### Recommended action plan")
+    action_rows = [
+        {"Priority":"1 · High","Opportunity":"Convert one-time buyers","Evidence":f"{one_time:,} identified customers purchased once.","Action":"Test a second-purchase email or offer after the first order; use a randomized holdout.","Success measure":"Incremental 2nd-purchase rate and contribution margin."},
+        {"Priority":"2 · High","Opportunity":"Prioritise customer follow-up","Evidence":f"{needs_attention:,} customers are in the Needs Attention RFM segment; {at_risk:,} are At Risk.","Action":"Pilot low-cost service or replenishment reminders, prioritising recent purchase history and customer value.","Success measure":"Reactivation rate, revenue per contacted customer and campaign cost."},
+        {"Priority":"3 · Medium","Opportunity":"Reduce market concentration","Evidence":f"{top_country} contributes {uk_share:.1%} of valid-sale revenue.","Action":"Test selected non-UK markets with localised merchandising and shipping propositions before scaling.","Success measure":"Non-UK revenue growth, order frequency and net margin."},
+        {"Priority":"4 · Medium","Opportunity":"Improve customer identification","Evidence":f"{int(quality.get('missing_customer_id',0)):,} transaction rows have no Customer ID.","Action":"Audit checkout and order-import identity capture; monitor missing-ID rate monthly.","Success measure":"Share of valid-sale lines linked to a customer ID."},
+        {"Priority":"5 · Medium","Opportunity":"Protect product availability","Evidence":f"{top_product['description']} is the highest-revenue product in the current product summary.","Action":"Review stock-outs, gross margin and repeat purchase association before increasing promotion.","Success measure":"Gross margin, stock-out rate and incremental units sold."},
+    ]
+    st.dataframe(pd.DataFrame(action_rows), use_container_width=True, hide_index=True)
+
+    st.markdown("#### Retention opportunity scenario")
+    st.caption("Illustrative planning calculator only. It is not a forecast: it assumes a chosen share of one-time customers make one additional order at the historical average invoice value.")
+    s1, s2 = st.columns(2)
+    with s1:
+        conversion = st.slider("Assumed one-time customer conversion", 1, 30, 5, 1, format="%d%%")
+    with s2:
+        order_value = st.number_input("Assumed additional order value (GBP)", min_value=1.0, max_value=10000.0, value=float(summary.get("average_order_value_gbp", 523.31)), step=10.0)
+    expected_buyers = round(one_time * conversion / 100)
+    scenario_revenue = expected_buyers * order_value
+    s3, s4, s5 = st.columns(3)
+    with s3: kpi("ILLUSTRATIVE CONVERTED BUYERS", f"{expected_buyers:,}", f"{conversion}% of {one_time:,} one-time buyers")
+    with s4: kpi("ILLUSTRATIVE EXTRA SALES", money(scenario_revenue), "Before discounts, costs and returns")
+    with s5: kpi("SCENARIO ORDER VALUE", money(order_value, 2), "User-adjustable assumption")
+    st.info("Use this scenario to size a test, not to claim expected business impact. Measure incremental outcomes against a randomized control group.")
+
+    st.markdown("#### How to use the inactivity model responsibly")
+    st.write(f"The Logistic Regression baseline detected {recall:.1%} of inactive test snapshots (recall), while {precision:.1%} of flagged snapshots were actually inactive (precision).")
+    st.write("Start with a small pilot and a holdout group. Do not contact every flagged customer automatically: validate thresholds, consent, contact frequency, campaign economics and model stability first.")
+    st.download_button("⬇ Download action plan (CSV)",
+        pd.DataFrame(action_rows).to_csv(index=False).encode("utf-8"),
+        file_name="business_action_plan.csv", mime="text/csv")
 
 # ---------- Data quality ----------
 with tab_quality:
