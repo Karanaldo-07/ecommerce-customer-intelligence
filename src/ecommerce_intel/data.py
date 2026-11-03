@@ -45,7 +45,7 @@ def clean_transactions(frame: pd.DataFrame) -> pd.DataFrame:
         & df["invoice_date"].notna() & df["quantity"].notna()
         & df["unit_price"].notna() & df["invoice_no"].notna()
     )
-    return df.drop_duplicates().reset_index(drop=True)
+    return df.reset_index(drop=True)
 
 def validate_transactions(df: pd.DataFrame) -> dict:
     """Return transparent quality counts; never silently discard questionable rows."""
