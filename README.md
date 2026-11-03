@@ -82,12 +82,19 @@ See [data/README.md](data/README.md) for download instructions, field definition
 
 - [x] Repository foundation and project scope
 - [x] Select and document a public dataset
-- [ ] Download and validate raw data
-- [ ] Data quality and SQL analysis
-- [ ] EDA and statistical investigation
-- [ ] RFM segmentation
-- [ ] Churn modelling and model interpretation
-- [ ] Dashboard, tests, and deployment
+- [x] Initial ingestion, cleaning, analytics, and RFM segmentation modules
+- [x] Unit tests and GitHub Actions CI workflow added
+- [ ] Execute CI and resolve any failures
+- [ ] Download and validate the full raw workbook
+- [ ] Full dataset SQL analysis and EDA
+- [ ] Time-based inactivity target and validated churn model
+- [ ] Dashboard, business recommendations, and deployment
+
+## Run the project
+
+Install dependencies with `pip install -r requirements.txt`, download the source workbook using `python scripts/download_data.py`, then run `python scripts/run_analysis.py`. The pipeline writes generated files under `data/processed/` and a quality report under `reports/`. Run tests with `pytest -q`.
+
+The current model module deliberately refuses to train unless a chronological observation window and future inactivity label are supplied. This prevents a misleading churn result from being manufactured from a single undivided transaction history.
 
 ## Author
 
