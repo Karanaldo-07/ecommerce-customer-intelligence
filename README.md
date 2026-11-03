@@ -25,7 +25,7 @@ See [data/README.md](data/README.md) for download instructions, field definition
 2. **SQL analytics** — revenue trends, product performance, repeat purchase behaviour, cohort retention, country contribution, and cancellation monitoring. See `sql/business_analysis.sql`.
 3. **Exploratory analysis** — automated monthly revenue, country and product performance, order-value distribution, customer repeat-purchase summary, and cohort-retention visualizations. EDA tables are written to `data/processed/eda_*.csv`; charts and `reports/eda_summary.json` are written under `reports/`.
 4. **Customer segmentation** — RFM features (recency, frequency, monetary value), baseline segments, and interpretation.
-5. **Churn / inactivity modelling** — define a leakage-safe target, build a baseline model, compare suitable models, and evaluate with precision, recall, F1, ROC-AUC and PR-AUC as appropriate.
+5. **Churn / inactivity modelling** — create monthly customer snapshots from a 180-day lookback, label inactivity in the following 90 days, and compare Logistic Regression with Random Forest using a chronological holdout and precision, recall, F1, ROC-AUC and PR-AUC.
 6. **Business recommendations** — translate findings into testable retention and merchandising actions.
 7. **Dashboard and API** — publish an interactive analytics dashboard and, if useful, a small prediction API.
 
@@ -86,13 +86,14 @@ See [data/README.md](data/README.md) for download instructions, field definition
 - [x] Advanced SQL business-analysis query pack
 - [x] Monthly customer cohort-retention analysis with automated tests
 - [x] Reproducible EDA tables, summary metrics, and charts integrated into the pipeline
+- [x] Leakage-aware monthly inactivity snapshot builder and baseline model comparison implemented
 - [x] Unit tests and GitHub Actions CI workflow added
 - [x] Execute CI and resolve initial failures
 - [x] Download and validate the full raw workbook
 - [ ] Execute SQL pack against PostgreSQL and interpret business findings
 - [x] Generate full-dataset exploratory analysis tables and charts
 - [ ] Interpret EDA findings and write business recommendations
-- [ ] Time-based inactivity target and validated churn model
+- [ ] Validate inactivity model training and metrics on the complete dataset
 - [ ] Dashboard, business recommendations, and deployment
 
 ## Run the project
