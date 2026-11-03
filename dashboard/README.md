@@ -2,15 +2,25 @@
 
 Streamlit dashboard for revenue, product and country performance, customer behaviour, RFM segments, cohort retention, data quality, and inactivity model evaluation.
 
+## Data and privacy
+
+The dashboard reads the aggregate-only files in `dashboard_data/`. The analytics workflow creates these from the full processed outputs and commits only aggregate tables and summary JSON. Customer IDs, invoice IDs, individual customer feature rows, raw transactions, and trained model binaries are not included in the public dashboard data folder.
+
 ## Run locally
 
-1. Download the latest ecommerce-customer-intelligence-outputs artifact from the [Build analytics outputs workflow](https://github.com/Karanaldo-07/ecommerce-customer-intelligence/actions/workflows/analytics.yml).
-2. Extract the archive into the repository root, preserving data/processed and reports folders.
-3. Install dependencies with: pip install -r requirements.txt
-4. Start the app with: streamlit run app.py
+1. Open the [Build analytics outputs workflow](https://github.com/Karanaldo-07/ecommerce-customer-intelligence/actions/workflows/analytics.yml) and click **Run workflow**.
+2. Wait for the run to complete. It downloads the official UCI workbook, runs the analysis, creates aggregate dashboard tables, and commits refreshed files to `dashboard_data/`.
+3. Clone or pull the repository.
+4. Install dependencies with `pip install -r requirements.txt`.
+5. Start the app with `streamlit run app.py`.
 
-The app reads precomputed CSV and JSON outputs. It does not rerun model training on each page load.
+The app reads precomputed aggregate CSV and JSON outputs. It does not retrain models on page load.
 
-## Deployment
+## Publish with Streamlit Community Cloud
 
-For Streamlit Community Cloud, deploy this repository with app.py as the entry point. The generated aggregate dashboard CSVs and JSON reports must be present in the deployed repository or supplied through an external data store. Do not publish the raw customer-level transaction workbook or model artifacts unnecessarily.
+1. Sign in to Streamlit Community Cloud with GitHub.
+2. Choose **New app**, select this repository and the `main` branch.
+3. Set the main file path to `app.py`.
+4. Deploy. The root `requirements.txt` contains the dashboard dependencies.
+
+After refreshing the analysis, the workflow commits updated aggregate tables to `main`; the deployed app can pick up the repository update through its normal redeploy/reboot flow.
