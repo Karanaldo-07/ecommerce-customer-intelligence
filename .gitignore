@@ -1,0 +1,22 @@
+# Environment and secrets
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Raw and processed datasets (large / source-controlled separately)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Generated outputs
+reports/figures/*
+!reports/figures/.gitkeep
+
+# Local database / logs
+*.sqlite3
+*.db
+*.log
