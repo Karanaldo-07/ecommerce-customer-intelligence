@@ -27,6 +27,8 @@ jobs:
         run: python scripts/run_analysis.py
       - name: Build privacy-conscious dashboard aggregates
         run: python scripts/build_public_dashboard_data.py
+      - name: Validate dashboard aggregates and privacy
+        run: python scripts/validate_dashboard_data.py
       - name: Commit aggregate dashboard data
         run: |
           git config user.name "github-actions[bot]"
