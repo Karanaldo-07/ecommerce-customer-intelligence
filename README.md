@@ -2,15 +2,26 @@
 
 An end-to-end, portfolio-grade data science project exploring e-commerce transactions, customer behaviour, revenue performance, segmentation, and churn risk.
 
-> **Project status:** Foundation and project plan. Analysis, models, metrics, and dashboard results will be added only after they have been implemented and validated. No performance claims are made at this stage.
+> **Project status:** Dataset selected and project foundation created. Analysis, models, metrics, and dashboard results will be added only after they have been implemented and validated. No performance claims are made at this stage.
 
 ## Business problem
 
 An online retailer wants to understand what drives revenue, which customers are most valuable, how purchasing behaviour changes over time, and which customers may be at risk of becoming inactive. This project will turn transactional data into reproducible analysis and decision-support outputs.
 
+## Dataset
+
+We selected **UCI Online Retail II**: 1,067,371 transaction line-items covering 1 December 2009 to 9 December 2011. It contains invoice, product, quantity, timestamp, unit price, customer ID, and country fields. The source includes missing customer IDs and cancellation/return records, which will be profiled and handled transparently.
+
+- [Official UCI dataset page](https://archive.ics.uci.edu/dataset/502/online+retail+ii)
+- DOI: https://doi.org/10.24432/C5CG6D
+- License: CC BY 4.0
+- Creator: Daqing Chen
+
+See [data/README.md](data/README.md) for download instructions, field definitions, handling principles, and attribution.
+
 ## Planned deliverables
 
-1. **Data ingestion and data quality** — document the dataset source, schema, assumptions, missing values, duplicates, and validation checks.
+1. **Data ingestion and data quality** — reproducible download, schema inspection, missingness, duplicates, cancellations, returns, and validation checks.
 2. **SQL analytics** — revenue trends, order patterns, repeat purchase behaviour, cohort retention, and customer-level metrics.
 3. **Exploratory analysis** — customer, product, geography, and time-based analysis with clear visualizations.
 4. **Customer segmentation** — RFM features (recency, frequency, monetary value), baseline segments, and interpretation.
@@ -33,16 +44,16 @@ An online retailer wants to understand what drives revenue, which customers are 
 ```text
 .
 ├── data/
-│   ├── raw/                 # Original data; do not commit private/large data
-│   ├── processed/           # Reproducible transformed data
-│   └── README.md            # Dataset acquisition and data dictionary
+│   ├── raw/                 # Original data; excluded from Git
+│   └── README.md            # Dataset source, data dictionary, handling
 ├── notebooks/               # Ordered analysis notebooks
+├── scripts/                 # Reproducible data acquisition scripts
 ├── sql/
-│   └── schema.sql           # Initial relational schema
+│   └── schema.sql
 ├── src/
-│   └── ecommerce_intel/     # Reusable project code
+│   └── ecommerce_intel/
 ├── reports/
-│   └── figures/             # Exported charts and report assets
+│   └── figures/
 ├── tests/
 ├── .env.example
 ├── requirements.txt
@@ -54,13 +65,9 @@ An online retailer wants to understand what drives revenue, which customers are 
 1. Use Python 3.11 or newer.
 2. Create and activate a virtual environment.
 3. Install dependencies: `pip install -r requirements.txt`.
-4. Read [data/README.md](data/README.md) before downloading a dataset.
-5. Configure local database credentials using `.env.example`. Never commit real credentials.
-6. Work through notebooks in numerical order as they are added.
-
-## Data and reproducibility
-
-The dataset has not yet been selected. We will choose a public dataset with transaction-level records and document its license, source URL, columns, date coverage, and limitations before analysis. Raw datasets and personally identifiable information must not be committed to this repository.
+4. Download the dataset: `python scripts/download_data.py`.
+5. Read [data/README.md](data/README.md) before analysis.
+6. Configure local database credentials using `.env.example`. Never commit real credentials.
 
 ## Evaluation principles
 
@@ -74,8 +81,8 @@ The dataset has not yet been selected. We will choose a public dataset with tran
 ## Current status
 
 - [x] Repository foundation and project scope
-- [x] Initial relational schema
-- [ ] Select and document dataset
+- [x] Select and document a public dataset
+- [ ] Download and validate raw data
 - [ ] Data quality and SQL analysis
 - [ ] EDA and statistical investigation
 - [ ] RFM segmentation
