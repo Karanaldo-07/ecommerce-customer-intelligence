@@ -36,6 +36,11 @@ def test_segmentation_adds_labels():
 
 def test_cohort_retention_tracks_repeat_customers():
     df = transactions()
+    extra = df.iloc[[0]].copy()
+    extra["invoice_no"] = "4"
+    extra["customer_id"] = "30"
+    extra["invoice_date"] = pd.Timestamp("2011-01-15")
+    df = pd.concat([df, extra], ignore_index=True)
     df["is_valid_sale"] = True
     df["line_revenue"] = df.quantity * df.unit_price
     result = cohort_retention(df)
