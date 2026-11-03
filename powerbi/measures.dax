@@ -1,0 +1,67 @@
+// E-Commerce Customer Intelligence — Power BI measures
+// Import the corresponding CSV tables first.
+
+// Revenue
+Total Revenue GBP =
+SUM ( MonthlyRevenue[revenue] )
+
+Total Invoices =
+SUM ( MonthlyRevenue[invoice_count] )
+
+Average Order Value GBP =
+DIVIDE ( [Total Revenue GBP], [Total Invoices] )
+
+// Customers — CustomerSummary contains one row per identified customer.
+Identified Customers =
+DISTINCTCOUNT ( CustomerSummary[customer_id] )
+
+Repeat Customers =
+CALCULATE (
+    DISTINCTCOUNT ( CustomerSummary[customer_id] ),
+    CustomerSummary[customer_type] = "Repeat"
+)
+
+Repeat Customer Rate =
+DIVIDE ( [Repeat Customers], [Identified Customers] )
+
+One-Time Customers =
+CALCULATE (
+    DISTINCTCOUNT ( CustomerSummary[customer_id] ),
+    CustomerSummary[customer_type] = "One-time"
+)
+
+// Product and country tables
+Country Revenue GBP =
+SUM ( CountryPerformance[revenue] )
+
+Product Revenue GBP =
+SUM ( ProductPerformance[revenue] )
+
+// CohortRetention is pre-aggregated by cohort month and cohort index.
+// Average retention is useful for a selected cohort age, but should not
+// be interpreted as a customer-weighted global retention metric.
+Average Cohort Retention =
+AVERAGE ( CohortRetention[retention_rate] )
+
+// Model monitoring — snapshot-level metrics. Do not treat row count as
+// unique customer count because each customer may have multiple snapshots.
+Inactivity Snapshots =
+COUNTROWS ( InactivitySnapshots )
+
+Inactive Snapshots =
+CALCULATE (
+    COUNTROWS ( InactivitySnapshots ),
+    InactivitySnapshots[is_inactive] = 1
+)
+
+Snapshot Inactivity Rate =
+DIVIDE ( [Inactive Snapshots], [Inactivity Snapshots] )
+
+Average Recency Days =
+AVERAGE ( InactivitySnapshots[recency_days] )
+
+Average Orders in Lookback =
+AVERAGE ( InactivitySnapshots[frequency_180d] )
+
+Average Spend in Lookback GBP =
+AVERAGE ( InactivitySnapshots[monetary_180d] )
