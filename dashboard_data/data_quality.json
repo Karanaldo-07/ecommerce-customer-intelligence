@@ -1,0 +1,11 @@
+{
+  "rows": 1067371,
+  "duplicate_rows": 34335,
+  "missing_customer_id": 243007,
+  "missing_invoice_date": 0,
+  "cancellations": 19494,
+  "non_sale_lines": 25700,
+  "valid_sale_lines": 1041670,
+  "date_min": "2009-12-01 07:45:00",
+  "date_max": "2011-12-09 12:50:00"
+}

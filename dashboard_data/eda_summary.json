@@ -1,0 +1,14 @@
+{
+  "valid_sale_lines": 1041670,
+  "identified_sale_lines": 805549,
+  "total_revenue_gbp": 20972594.57,
+  "unique_invoices_in_valid_sales": 40077,
+  "identified_customers": 5878,
+  "repeat_customers": 4255,
+  "repeat_customer_rate": 0.7239,
+  "average_order_value_gbp": 523.31,
+  "top_country_by_revenue": "United Kingdom",
+  "top_country_revenue_gbp": 17870977.78,
+  "top_product_stock_code": "22423",
+  "top_product_revenue_gbp": 344563.25
+}
