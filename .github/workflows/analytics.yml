@@ -32,5 +32,6 @@ jobs:
           path: |
             data/processed/
             reports/
+            data/processed/*.joblib
           if-no-files-found: error
           retention-days: 14
