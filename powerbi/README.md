@@ -6,7 +6,7 @@ Build a report from the **privacy-safe aggregate CSVs** in `dashboard_data/`. No
 
 Run the GitHub Actions workflow **Build analytics outputs**. It downloads UCI Online Retail II, rebuilds analysis, validates the public aggregates, and commits refreshed files to `dashboard_data/`.
 
-In Power BI Desktop, choose **Home → Get data → Text/CSV** and import:
+For a faster import, use [`power_query.m`](power_query.m): copy the `dashboard_data/` folder locally, create a Blank Query in Power Query, paste the script into Advanced Editor, and replace `FolderPath` with your local folder path. Name the query `DashboardData`. Then create eight Reference queries and set each formula to `= DashboardData[MonthlyRevenue]`, `= DashboardData[CountryPerformance]`, `= DashboardData[ProductPerformance]`, `= DashboardData[CustomerTypeSummary]`, `= DashboardData[CustomerRevenueBands]`, `= DashboardData[SegmentCounts]`, `= DashboardData[CohortRetention]`, or `= DashboardData[InactivityMonthly]` respectively. Rename each reference query to the table name shown below.\n\nAlternatively, choose **Home → Get data → Text/CSV** and import each CSV individually:
 
 | Power BI table | CSV | Purpose |
 |---|---|---|
