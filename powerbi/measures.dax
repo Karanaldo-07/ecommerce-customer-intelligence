@@ -1,67 +1,70 @@
-// E-Commerce Customer Intelligence — Power BI measures
-// Import the corresponding CSV tables first.
+// E-Commerce Customer Intelligence — measures for aggregate-only CSV tables.
+// Import tables using powerbi/README.md. Currency is GBP.
 
-// Revenue
 Total Revenue GBP =
 SUM ( MonthlyRevenue[revenue] )
 
 Total Invoices =
-SUM ( MonthlyRevenue[invoice_count] )
+SUM ( MonthlyRevenue[orders] )
+
+Total Units Sold =
+SUM ( MonthlyRevenue[units] )
 
 Average Order Value GBP =
 DIVIDE ( [Total Revenue GBP], [Total Invoices] )
 
-// Customers — CustomerSummary contains one row per identified customer.
-Identified Customers =
-DISTINCTCOUNT ( CustomerSummary[customer_id] )
+Customers =
+SUM ( CustomerTypeSummary[customers] )
 
 Repeat Customers =
-CALCULATE (
-    DISTINCTCOUNT ( CustomerSummary[customer_id] ),
-    CustomerSummary[customer_type] = "Repeat"
-)
-
-Repeat Customer Rate =
-DIVIDE ( [Repeat Customers], [Identified Customers] )
+CALCULATE ( [Customers], CustomerTypeSummary[customer_type] = "Repeat" )
 
 One-Time Customers =
-CALCULATE (
-    DISTINCTCOUNT ( CustomerSummary[customer_id] ),
-    CustomerSummary[customer_type] = "One-time"
-)
+CALCULATE ( [Customers], CustomerTypeSummary[customer_type] = "One-time" )
 
-// Product and country tables
+Repeat Customer Rate =
+DIVIDE ( [Repeat Customers], [Customers] )
+
+Customer Lifetime Revenue GBP =
+SUM ( CustomerTypeSummary[lifetime_revenue_gbp] )
+
+Segmented Customers =
+SUM ( SegmentCounts[customers] )
+
 Country Revenue GBP =
 SUM ( CountryPerformance[revenue] )
+
+Country Invoices =
+SUM ( CountryPerformance[orders] )
 
 Product Revenue GBP =
 SUM ( ProductPerformance[revenue] )
 
-// CohortRetention is pre-aggregated by cohort month and cohort index.
-// Average retention is useful for a selected cohort age, but should not
-// be interpreted as a customer-weighted global retention metric.
-Average Cohort Retention =
+Product Units Sold =
+SUM ( ProductPerformance[units_sold] )
+
+Cohort Retention % =
 AVERAGE ( CohortRetention[retention_rate] )
 
-// Model monitoring — snapshot-level metrics. Do not treat row count as
-// unique customer count because each customer may have multiple snapshots.
-Inactivity Snapshots =
-COUNTROWS ( InactivitySnapshots )
+Cohort Customers =
+SUM ( CohortRetention[customers] )
 
-Inactive Snapshots =
-CALCULATE (
-    COUNTROWS ( InactivitySnapshots ),
-    InactivitySnapshots[is_inactive] = 1
+Inactivity Snapshot Count =
+SUM ( InactivityMonthly[snapshot_count] )
+
+Monthly Inactivity Rate =
+DIVIDE (
+    SUMX (
+        InactivityMonthly,
+        InactivityMonthly[inactive_share] * InactivityMonthly[snapshot_count]
+    ),
+    [Inactivity Snapshot Count]
 )
 
-Snapshot Inactivity Rate =
-DIVIDE ( [Inactive Snapshots], [Inactivity Snapshots] )
-
-Average Recency Days =
-AVERAGE ( InactivitySnapshots[recency_days] )
-
-Average Orders in Lookback =
-AVERAGE ( InactivitySnapshots[frequency_180d] )
-
-Average Spend in Lookback GBP =
-AVERAGE ( InactivitySnapshots[monetary_180d] )
+Latest Monthly Inactivity Rate =
+VAR LatestDate = MAX ( InactivityMonthly[observation_end] )
+RETURN
+    CALCULATE (
+        [Monthly Inactivity Rate],
+        InactivityMonthly[observation_end] = LatestDate
+    )
