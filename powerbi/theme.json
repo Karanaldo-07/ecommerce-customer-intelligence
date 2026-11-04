@@ -1,0 +1,43 @@
+{
+  "name": "E-Commerce Intelligence Navy Teal",
+  "dataColors": [
+    "#173B67",
+    "#176B78",
+    "#4C78A8",
+    "#E09F3E",
+    "#9BB6CC",
+    "#B56576",
+    "#2B8290",
+    "#7A8FA6"
+  ],
+  "background": "#F5F7FB",
+  "foreground": "#14213D",
+  "tableAccent": "#176B78",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "title": [
+          {
+            "fontFace": "Manrope",
+            "fontSize": 14,
+            "color": {
+              "solid": {
+                "color": "#172B4D"
+              }
+            }
+          }
+        ],
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "transparency": 0
+          }
+        ]
+      }
+    }
+  }
+}
